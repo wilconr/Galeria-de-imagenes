@@ -1,0 +1,25 @@
+{
+    "name": "photo_gallery",
+    "version": "1.0.0",
+    "description": "Galeria de fotos con subida de imagenes a cloudinary",
+    "main": "index.js",
+    "scripts": {
+        "start": "node index.js",
+        "dev": "nodemon index.js"
+    },
+    "author": "Wilmer Contreras Riaño",
+    "license": "MIT",
+    "dependencies": {
+        "cloudinary": "^1.16.0",
+        "dotenv": "^8.2.0",
+        "express": "^4.17.1",
+        "express-handlebars": "^3.1.0",
+        "fs-extra": "^8.1.0",
+        "mongoose": "^5.7.8",
+        "morgan": "^1.9.1",
+        "multer": "^1.4.2"
+    },
+    "devDependencies": {
+        "nodemon": "^1.19.4"
+    }
+}

@@ -12,16 +12,47 @@ let getImageAdd = async(req, res) => {
 
     let photos = await Photo.find();
     res.render('image_form', { photos });
+
 }
 
 let postImageAdd = async(req, res) => {
 
     // console.log(req.body);
     // console.log(req.file);
-    const rutaImg = req.file.path;
+    let errors = [];
+    let file = req.file;
+
+    // Verificacion si no se sube un archivo
+    if (!file) {
+        errors.push({ texto: 'No se ha seleccionado un archivo' });
+    }
+
+    if (errors.length > 0) {
+        let photos = await Photo.find();
+        return res.render('image_form', { errors, photos }, );
+    }
+
+    let fileName = req.file.originalname;
+    let fileRoute = req.file.path;
+
+    let splitName = fileName.split('.'); // Descomposicion del nombre del archivo para tomar la extension
+    let extension = splitName[splitName.length - 1]; // expension de la imagen
+
+    let extensionesValidas = ['png', 'jpg', 'gif', 'jpeg']; // Extensiones validas
+
+    // Verificacion si es un archivo de imagen valido
+    if (extensionesValidas.indexOf(extension) < 0) {
+        fs.unlink(fileRoute); // Elimina el archivo de la carpeta uploads
+        errors.push({ texto: 'las extenciones permitidas son: ' + extensionesValidas.join(', ') });
+    }
+
+    if (errors.length > 0) {
+        let photos = await Photo.find();
+        return res.render('image_form', { errors, photos }, );
+    }
 
     const { title, description } = req.body;
-    const result = await cloudinary.v2.uploader.upload(rutaImg); // Sube la imagen a Cloudinary
+    const result = await cloudinary.v2.uploader.upload(fileRoute); // Sube la imagen a Cloudinary
     // console.log(result);
     const { url, public_id } = result;
 
@@ -33,8 +64,9 @@ let postImageAdd = async(req, res) => {
     });
 
     await newPhoto.save(); // Guarda en la base de datos
-    await fs.unlink(rutaImg); // Elimina el archivo de la carpeta uploads
+    await fs.unlink(fileRoute); // Elimina el archivo de la carpeta uploads
     res.redirect('/');
+    // res.send('received');
 
 }
 
